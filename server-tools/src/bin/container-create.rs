@@ -2,7 +2,7 @@ use clap::{clap_app, App};
 use flexi_logger::Logger;
 use log::debug;
 use server_tools::ROOT_DIR;
-use zfs::Handle;
+use zfs::Zfs;
 
 fn app<'a, 'b>() -> App<'a, 'b> {
     clap_app!(
@@ -18,7 +18,7 @@ fn main() {
     let params = app().get_matches();
     debug!("Creating container {}", params.value_of("name").unwrap());
 
-    let zfs = Handle::new().unwrap();
+    let zfs = Zfs::new().unwrap();
     let root = zfs.resolve(ROOT_DIR).unwrap();
     debug!("{} is {}", ROOT_DIR, root.path());
 }

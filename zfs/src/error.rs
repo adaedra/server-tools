@@ -1,4 +1,4 @@
-use super::{native, Handle};
+use super::{native, Zfs};
 use std::ffi::CStr;
 
 #[derive(Debug)]
@@ -9,7 +9,7 @@ pub struct Error {
 }
 
 impl Error {
-    pub fn from_handle(handle: &Handle) -> Error {
+    pub(crate) fn from_library(handle: &Zfs) -> Error {
         let action = unsafe {
             let raw = native::libzfs_error_action(handle.0);
             let cstr = CStr::from_ptr(raw).to_str().unwrap();
