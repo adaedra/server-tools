@@ -19,6 +19,8 @@ fn main() {
     debug!("Creating container {}", params.value_of("name").unwrap());
 
     let zfs = Zfs::new().unwrap();
-    let root = zfs.resolve(ROOT_DIR).unwrap();
+    let root = zfs
+        .resolve(ROOT_DIR)
+        .expect("Unable to open the root dataset");
     debug!("{} is {}", ROOT_DIR, root.path());
 }

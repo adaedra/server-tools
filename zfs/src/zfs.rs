@@ -1,4 +1,4 @@
-use super::{native, Dataset, Error};
+use super::{native, Dataset, Error, ZfsError};
 use log::debug;
 use std::ffi::CString;
 use std::fs::canonicalize;
@@ -24,8 +24,7 @@ impl Zfs {
     // In some case of errors (the most common ones...) libzfs will print an error message directly and not set it
     // in the handle.
     pub fn resolve<T: AsRef<Path>>(&self, path: T) -> Result<Dataset, Error> {
-        // FIXME: This unwrap should not exist.
-        let real_path = canonicalize(path).unwrap();
+        let real_path = canonicalize(path)?;
         let c_str = CString::new(real_path.to_str().unwrap()).unwrap();
         let handle = unsafe {
             native::zfs_path_to_zhandle(
@@ -36,7 +35,7 @@ impl Zfs {
         };
 
         if handle.is_null() {
-            Err(Error::from_library(self))
+            Err(ZfsError::from_library(self).into())
         } else {
             Ok(Dataset(handle))
         }
