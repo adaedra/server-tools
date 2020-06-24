@@ -1,7 +1,7 @@
 use std::fmt::{self, Display, Formatter};
 use std::path;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Path(String, path::PathBuf);
 
 impl Path {
@@ -32,6 +32,10 @@ impl Path {
         } else {
             format!("{}{}", self.0, self.1.display())
         }
+    }
+
+    pub fn push<T: AsRef<path::Path>>(&mut self, path: T) {
+        self.1.push(path);
     }
 }
 

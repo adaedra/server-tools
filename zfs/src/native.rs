@@ -1,7 +1,46 @@
 use std::os::raw::{c_char, c_int};
 
 #[allow(non_camel_case_types)]
-type c_bool = u32;
+pub type c_bool = u32;
+
+// nvlist
+
+#[repr(C)]
+pub struct nvlist_t {
+    _unused: [u8; 0],
+}
+
+pub const NV_UNIQUE_NAME: u32 = 1;
+
+#[allow(non_camel_case_types)]
+pub type nvlist_add_func<T> = unsafe extern "C" fn(*mut nvlist_t, *const c_char, T) -> c_int;
+
+#[link(name = "nvpair")]
+extern "C" {
+    pub fn nvlist_alloc(ptr: *mut *mut nvlist_t, nvflag: u32, flag: c_int) -> c_int;
+    pub fn nvlist_free(ptr: *mut nvlist_t);
+
+    pub fn nvlist_add_boolean_value(
+        ptr: *mut nvlist_t,
+        name: *const c_char,
+        value: c_bool,
+    ) -> c_int;
+    pub fn nvlist_add_int8(ptr: *mut nvlist_t, name: *const c_char, value: i8) -> c_int;
+    pub fn nvlist_add_uint8(ptr: *mut nvlist_t, name: *const c_char, value: u8) -> c_int;
+    pub fn nvlist_add_int16(ptr: *mut nvlist_t, name: *const c_char, value: i16) -> c_int;
+    pub fn nvlist_add_uint16(ptr: *mut nvlist_t, name: *const c_char, value: u16) -> c_int;
+    pub fn nvlist_add_int32(ptr: *mut nvlist_t, name: *const c_char, value: i32) -> c_int;
+    pub fn nvlist_add_uint32(ptr: *mut nvlist_t, name: *const c_char, value: u32) -> c_int;
+    pub fn nvlist_add_int64(ptr: *mut nvlist_t, name: *const c_char, value: i64) -> c_int;
+    pub fn nvlist_add_uint64(ptr: *mut nvlist_t, name: *const c_char, value: u64) -> c_int;
+    pub fn nvlist_add_string(
+        ptr: *mut nvlist_t,
+        name: *const c_char,
+        value: *const c_char,
+    ) -> c_int;
+}
+
+// zfs
 
 #[repr(C)]
 pub struct libzfs_handle_t {
@@ -43,4 +82,11 @@ extern "C" {
         path: *mut c_char,
         path_type: zfs_type_t::Value,
     ) -> *mut zfs_handle_t;
+
+    pub fn zfs_create(
+        handle: *mut libzfs_handle_t,
+        name: *const c_char,
+        ztype: zfs_type_t::Value,
+        props: *mut nvlist_t,
+    ) -> c_int;
 }

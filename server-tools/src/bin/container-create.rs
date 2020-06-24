@@ -2,7 +2,7 @@ use clap::{clap_app, App};
 use flexi_logger::Logger;
 use log::debug;
 use server_tools::ROOT_DIR;
-use zfs::Zfs;
+use zfs::{Dataset, Zfs};
 
 fn app<'a, 'b>() -> App<'a, 'b> {
     clap_app!(
@@ -15,11 +15,21 @@ fn app<'a, 'b>() -> App<'a, 'b> {
 
 fn main() {
     Logger::with_env().start().unwrap();
-    let _params = app().get_matches();
+    let params = app().get_matches();
+    let name = params.value_of("name").unwrap();
 
     let zfs = Zfs::new().unwrap();
-    let root = zfs
-        .resolve(ROOT_DIR)
-        .expect("Unable to open the root dataset");
-    debug!("{} is {}", ROOT_DIR, root.path());
+    let container_root = {
+        let root = zfs
+            .resolve(ROOT_DIR)
+            .expect("Unable to open the root dataset");
+        let mut path = root.path();
+        path.push("containers");
+        path.push(name);
+
+        path
+    };
+
+    debug!("Creating {}", container_root);
+    let _dataset = Dataset::create(zfs, container_root).unwrap();
 }
