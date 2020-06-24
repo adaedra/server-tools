@@ -1,4 +1,4 @@
-use super::{native, Zfs};
+use super::{native, Library};
 use std::error::Error as RustError;
 use std::ffi::CStr;
 use std::fmt;
@@ -12,7 +12,7 @@ pub struct ZfsError {
 }
 
 impl ZfsError {
-    pub(crate) fn from_library(handle: &Zfs) -> ZfsError {
+    pub(crate) fn from_library(handle: &Library) -> ZfsError {
         let action = unsafe {
             let raw = native::libzfs_error_action(handle.0);
             let cstr = CStr::from_ptr(raw).to_str().unwrap();

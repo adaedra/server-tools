@@ -15,8 +15,7 @@ fn app<'a, 'b>() -> App<'a, 'b> {
 
 fn main() {
     Logger::with_env().start().unwrap();
-    let params = app().get_matches();
-    debug!("Creating container {}", params.value_of("name").unwrap());
+    let _params = app().get_matches();
 
     let zfs = Zfs::new().unwrap();
     let root = zfs

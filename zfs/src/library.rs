@@ -6,10 +6,10 @@ use std::io;
 use std::os::raw::c_char;
 use std::path::Path;
 
-pub struct Zfs(pub(crate) *mut native::libzfs_handle_t);
+pub struct Library(pub(crate) *mut native::libzfs_handle_t);
 
-impl Zfs {
-    pub fn new() -> io::Result<Zfs> {
+impl Library {
+    pub fn new() -> io::Result<Library> {
         debug!("Initializing ZFS library");
         let handle = unsafe { native::libzfs_init() };
 
@@ -17,7 +17,7 @@ impl Zfs {
             Err(io::Error::last_os_error())
         } else {
             unsafe { native::libzfs_print_on_error(handle, 0) };
-            Ok(Zfs(handle))
+            Ok(Library(handle))
         }
     }
 
@@ -42,7 +42,7 @@ impl Zfs {
     }
 }
 
-impl Drop for Zfs {
+impl Drop for Library {
     fn drop(&mut self) {
         debug!("Clearing ZFS library");
         unsafe { native::libzfs_fini(self.0) }
