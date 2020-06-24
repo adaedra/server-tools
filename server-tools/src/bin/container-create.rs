@@ -20,9 +20,7 @@ fn main() {
 
     let zfs = Zfs::new().unwrap();
     let container_root = {
-        let root = zfs
-            .resolve(ROOT_DIR)
-            .expect("Unable to open the root dataset");
+        let root = Dataset::resolve(&zfs, ROOT_DIR).expect("Unable to open the root dataset");
         let mut path = root.path();
         path.push("containers");
         path.push(name);

@@ -1,10 +1,6 @@
-use super::{native, Dataset, Error, ZfsError};
+use super::native;
 use log::debug;
-use std::ffi::CString;
-use std::fs::canonicalize;
 use std::io;
-use std::os::raw::c_char;
-use std::path::Path;
 
 pub struct Library(pub(crate) *mut native::libzfs_handle_t);
 
@@ -18,26 +14,6 @@ impl Library {
         } else {
             unsafe { native::libzfs_print_on_error(handle, 0) };
             Ok(Library(handle))
-        }
-    }
-
-    // In some case of errors (the most common ones...) libzfs will print an error message directly and not set it
-    // in the handle.
-    pub fn resolve<T: AsRef<Path>>(&self, path: T) -> Result<Dataset, Error> {
-        let real_path = canonicalize(path)?;
-        let c_str = CString::new(real_path.to_str().unwrap()).unwrap();
-        let handle = unsafe {
-            native::zfs_path_to_zhandle(
-                self.0,
-                c_str.as_ptr() as *mut c_char,
-                native::zfs_type_t::ZFS_TYPE_FILESYSTEM,
-            )
-        };
-
-        if handle.is_null() {
-            Err(ZfsError::from_library(self).into())
-        } else {
-            Ok(Dataset(handle))
         }
     }
 }
