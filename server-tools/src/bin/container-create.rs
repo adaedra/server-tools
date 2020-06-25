@@ -1,7 +1,7 @@
 use clap::{clap_app, App};
 use flexi_logger::Logger;
-use log::{debug, error, info};
-use server_tools::ROOT_DIR;
+use log::{error, info};
+use server_tools::root_dataset;
 use std::process::exit;
 use zfs::{Dataset, Zfs};
 
@@ -21,9 +21,8 @@ fn main() {
 
     let zfs = Zfs::new().unwrap();
     let container_root = {
-        let root = Dataset::resolve(&zfs, ROOT_DIR).expect("Unable to open the root dataset");
+        let root = root_dataset(&zfs).expect("Unable to open the root dataset");
         let mut path = root.path();
-        debug!("{} is {}", ROOT_DIR, path.to_string());
 
         path.push("containers");
         path.push(name);
