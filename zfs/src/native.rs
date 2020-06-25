@@ -70,6 +70,8 @@ extern "C" {
 
     pub fn zfs_close(handle: *mut zfs_handle_t);
 
+    pub fn zfs_get_handle(handle: *mut zfs_handle_t) -> *mut libzfs_handle_t;
+
     // Error management
     pub fn libzfs_print_on_error(handle: *mut libzfs_handle_t, switch: c_bool);
     pub fn libzfs_errno(handle: *mut libzfs_handle_t) -> c_int;
@@ -89,4 +91,9 @@ extern "C" {
         ztype: zfs_type_t::Value,
         props: *mut nvlist_t,
     ) -> c_int;
+    pub fn zfs_open(
+        handle: *mut libzfs_handle_t,
+        path: *const c_char,
+        types: c_int,
+    ) -> *mut zfs_handle_t;
 }
